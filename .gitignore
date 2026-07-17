@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.dll
+*.pyd
+*.so
+*.bin
+*.db
+*.lock
+.env
