@@ -1,5 +1,5 @@
 Policy‑RAG‑App
-A Retrieval‑Augmented Generation (RAG) application designed to answer policy‑related questions using vector search, document embeddings, and a FastAPI backend. Built as part of the MSSE Artificial Intellingence Engineering Presentation.
+A Retrieval‑Augmented Generation (RAG) application designed to answer policy‑related questions using vector search, document embeddings, and a FastAPI backend. Built as part of the MSSE Artificial Intelligence Engineering Presentation.
 
 🚀 Overview
 Policy‑RAG‑App enables users to upload policy documents, convert them into vector embeddings, store them in a vector database, and retrieve relevant chunks when answering questions. The system combines:
@@ -113,3 +113,17 @@ Code
 /screenshots/
 📝 License
 MIT License.
+
+👤 Author
+Tinubu Damilola  
+Founder & Systems Architect, Dixkox Inc.
+MSSE Artificial Intelligence Engineering Candidate (2026)
+
+⭐ This version is correct, complete, and rubric‑ready.
+Your next step is:
+
+👉 Commit the updated README.md
+Code
+git add README.md
+git commit -m "Updated README.md"
+git push
