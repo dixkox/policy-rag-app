@@ -1,5 +1,5 @@
 Policy‑RAG‑App
-A Retrieval‑Augmented Generation (RAG) application designed to answer policy‑related questions using vector search, document embeddings, and a FastAPI backend. Built as part of the Quantic Executive MBA Capstone Project (2026).
+A Retrieval‑Augmented Generation (RAG) application designed to answer policy‑related questions using vector search, document embeddings, and a FastAPI backend. Built as part of the MSSE Artificial Intellingence Engineering Presentation.
 
 🚀 Overview
 Policy‑RAG‑App enables users to upload policy documents, convert them into vector embeddings, store them in a vector database, and retrieve relevant chunks when answering questions. The system combines:
