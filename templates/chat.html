@@ -1,77 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Policy Chat</title>
-  <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta charset="UTF-8">
+    <title>Policy RAG Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-
 <body>
-  <div class="container">
-    <h1>Policy Chat</h1>
+    <div class="container">
+        <h1>Policy RAG Assistant</h1>
 
-    <div id="messages"></div>
+        <div id="chat-box"></div>
 
-    <textarea id="question" placeholder="Ask a question about company policies..."></textarea>
-    <button id="send">Ask</button>
-  </div>
+        <div class="input-area">
+            <input id="user-input" type="text" placeholder="Ask a policy question...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-      const messagesDiv = document.getElementById("messages");
-      const questionInput = document.getElementById("question");
-      const sendBtn = document.getElementById("send");
-
-      sendBtn.addEventListener("click", async () => {
-        const question = questionInput.value.trim();
-        if (!question) return;
-
-        messagesDiv.innerHTML += `<div class="user-msg"><strong>You:</strong> ${question}</div>`;
-        questionInput.value = "";
-
-        messagesDiv.innerHTML += `<div id="thinking">Thinking...</div>`;
-
-        try {
-          const response = await fetch("/ask", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
-          });
-
-          document.getElementById("thinking").remove();
-
-          if (!response.ok) {
-            messagesDiv.innerHTML += `<div class="bot-msg error"><strong>Error:</strong> Server returned ${response.status}</div>`;
-            return;
-          }
-
-          const data = await response.json();
-
-          messagesDiv.innerHTML += `
-            <div class="bot-msg">
-              <strong>Assistant:</strong> ${data.answer}
-              <div class="latency">Latency: ${data.latency_ms.toFixed(2)} ms</div>
-
-              <details style="margin-top:10px;">
-                <summary><strong>Show Retrieved Context</strong></summary>
-                <pre>${JSON.stringify(data.context, null, 2)}</pre>
-              </details>
-
-              <details style="margin-top:10px;">
-                <summary><strong>Show Full JSON Response</strong></summary>
-                <pre>${JSON.stringify(data, null, 2)}</pre>
-              </details>
-            </div>
-          `;
-
-        } catch (err) {
-          document.getElementById("thinking").remove();
-          messagesDiv.innerHTML += `<div class="bot-msg error"><strong>Error:</strong> ${err.message}</div>`;
-        }
-      });
-
-    });
-  </script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

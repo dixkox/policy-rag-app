@@ -1,24 +1,19 @@
-document.getElementById("send").addEventListener("click", async () => {
-  const questionEl = document.getElementById("question");
-  const messagesEl = document.getElementById("messages");
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
 
-  const question = questionEl.value.trim();
-  if (!question) return;
+    const userMessage = input.value;
+    if (!userMessage) return;
 
-  messagesEl.textContent = "Thinking...";
+    chatBox.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+    input.value = "";
 
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
-  });
+    const response = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: userMessage })
+    });
 
-  const data = await res.json();
-
-  let text = `Answer:\n${data.answer}\n\nCitations:\n`;
-  for (const c of data.citations) {
-    text += `- ${c}\n`;
-  }
-
-  messagesEl.textContent = text;
-});
+    const data = await response.json();
+    chatBox.innerHTML += `<p><strong>Assistant:</strong> ${data.answer}</p>`;
+}
