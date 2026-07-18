@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
-from app.rag import rag_answer   # <-- this is your RAG pipeline
+from app.rag import rag_answer  # enhanced RAG pipeline
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -26,13 +26,11 @@ async def home(request: Request):
     template = env.get_template("chat.html")
     return HTMLResponse(template.render(request=request))
 
-# ⭐ RAG endpoint (PUT THIS RIGHT HERE)
+# Enhanced RAG endpoint
 @app.post("/ask")
 async def ask(request: Request):
     data = await request.json()
     question = data.get("question", "")
+
     answer = rag_answer(question)
     return JSONResponse({"answer": answer})
-
-# API routes (if you have any)
-# app.include_router(api_router)
