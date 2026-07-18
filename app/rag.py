@@ -50,4 +50,3 @@ def rag_answer(question: str) -> str:
     )
 
     return llm(prompt)
-exit
