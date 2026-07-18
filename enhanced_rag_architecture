@@ -1,0 +1,28 @@
+// Enhanced RAG Architecture
+digraph {
+	node [color=lightblue fontname=Arial shape=box style=filled]
+	UI [label="User Interface
+(chat.html)"]
+	API [label="FastAPI Backend
+(/ask Endpoint)"]
+	Rewriter [label="Query Rewriter
+(Query Enhancement)"]
+	Embed [label="Embeddings Model
+(sentence-transformers)"]
+	Vector [label="Vector Store
+(FAISS Database)"]
+	Reranker [label="Reranker
+(Results Re-ranking)"]
+	LLM [label="LLM
+(Answer Generation)"]
+	Response [label="Response to User
+(Policy-Aligned Answer)"]
+	UI -> API [label="User Query"]
+	API -> Rewriter
+	Rewriter -> Embed
+	Embed -> Vector
+	Vector -> Reranker
+	Reranker -> LLM
+	LLM -> Response [label=Answer]
+	Response -> UI [label="Display Answer"]
+}
