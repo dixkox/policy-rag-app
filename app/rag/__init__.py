@@ -1,8 +1,7 @@
-# RAG package
 from typing import List, Tuple
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.llms import OpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_community.llms import OpenAI
 from langchain.schema import Document
 
 # 1. Query Rewriter
@@ -13,7 +12,7 @@ def rewrite_query(question: str) -> str:
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # 3. Vector store (FAISS)
-db = FAISS.load_local("vectorstore", embeddings)
+db = FAISS.load_local("vectorstore", embeddings, allow_dangerous_deserialization=True)
 
 # 4. Retriever
 def retrieve_docs(query: str, k: int = 8) -> List[Document]:
