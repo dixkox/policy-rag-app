@@ -27,3 +27,11 @@ def rerank_docs(query: str, docs, top_k: int = 3):
 
     scored.sort(key=lambda x: x[0], reverse=True)
     return [doc for _, doc in scored[:top_k]]
+
+def rag_answer(question: str):
+    retrieved = retrieve_docs(question, k=8)
+    top_docs = rerank_docs(question, retrieved, top_k=3)
+
+    context = "\n\n".join(doc.page_content for doc in top_docs)
+
+    return f"Context:\n{context}\n\nAnswer:\nThis is where your LLM response will go."
