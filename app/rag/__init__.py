@@ -1,6 +1,6 @@
 # RAG package
 from typing import List, Tuple
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
 from langchain.schema import Document
