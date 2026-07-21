@@ -1,5 +1,10 @@
+import os
+import google.generativeai as genai
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+
+# Configure Gemini using environment variable
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Load embeddings
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -16,6 +21,7 @@ db = FAISS.load_local(
 def retrieve_docs(query: str, k: int = 3):
     return db.similarity_search(query, k=k)
 
+# Simple reranker
 def rerank_docs(query: str, docs, top_k: int = 3):
     query_vec = embeddings.embed_query(query)
     scored = []
@@ -28,10 +34,27 @@ def rerank_docs(query: str, docs, top_k: int = 3):
     scored.sort(key=lambda x: x[0], reverse=True)
     return [doc for _, doc in scored[:top_k]]
 
+# Full RAG answer using Gemini 1.5 Pro
 def rag_answer(question: str):
     retrieved = retrieve_docs(question, k=8)
     top_docs = rerank_docs(question, retrieved, top_k=3)
 
     context = "\n\n".join(doc.page_content for doc in top_docs)
 
-    return f"Context:\n{context}\n\nAnswer:\nThis is where your LLM response will go."
+    prompt = f"""
+You are an AI assistant answering questions strictly based on company policy documents.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+Provide a clear, concise, policy-grounded answer.
+"""
+
+    model = genai.GenerativeModel("gemini-1.5-pro")
+    response = model.generate_content(prompt)
+
+    return response.text
