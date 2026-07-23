@@ -1,33 +1,32 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+import os
+from google.genai import Client
 
-MODEL_NAME = "google/flan-t5-base"
-
-# Load ONCE at startup
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+# Initialize Gemini client once
+client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def generate_answer(question: str, context: str) -> str:
+    """
+    Generate a final RAG answer using Gemini 1.5 Pro.
+    """
+
     if not context or context.strip() == "":
         context = "No relevant policy information was found in the knowledge base."
 
-    prompt = (
-        f"Context:\n{context}\n\n"
-        f"Question: {question}\n"
-        f"Answer:"
+    prompt = f"""
+You are a policy assistant. Use ONLY the context below to answer.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer clearly and concisely.
+"""
+
+    response = client.models.generate_content(
+        model="gemini-1.5-pro-001",
+        contents=prompt
     )
 
-    inputs = tokenizer(
-        prompt,
-        return_tensors="pt",
-        truncation=True,
-        max_length=512
-    )
-
-    outputs = model.generate(
-        **inputs,
-        max_length=256,
-        temperature=0.2,
-        top_p=0.9
-    )
-
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return response.text
