@@ -27,14 +27,12 @@ def load_vectorstore():
         allow_dangerous_deserialization=True
     )
 
-def get_context(question: str) -> str:
+def retrieve_docs(query: str):
     """
-    Retrieve the most relevant policy chunks for the given question.
+    Retrieve the most relevant policy chunks for the given query.
+    Returns a list of LangChain Document objects.
     """
     vs = load_vectorstore()
-    docs = vs.similarity_search(question, k=4)
+    docs = vs.similarity_search(query, k=4)
 
-    if not docs:
-        return "No relevant policy documents found."
-
-    return "\n\n".join([d.page_content for d in docs])
+    return docs
