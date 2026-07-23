@@ -31,7 +31,7 @@ Answer clearly and concisely.
 
     # 5. Generate answer using Gemini 1.5 Pro
     response = client.models.generate_content(
-        model="gemini-1.5-pro-latest",
+        model="models/gemini-1.5-pro"
         contents=prompt
     )
 
