@@ -1,18 +1,15 @@
 import os
-import google.genai as genai
+from google.genai import Client
 
-# Configure Gemini with your environment variable
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-# Use the correct model name for the new SDK
-model = genai.GenerativeModel("gemini-1.5-pro-latest")
+# Create Gemini client using your API key
+client = Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def rag_answer(query):
-    # 1. Retrieve documents (your existing retrieval code)
+    # 1. Retrieve documents
     from app.rag.retrieval import retrieve_docs
     docs = retrieve_docs(query)
 
-    # 2. Rerank documents (your existing reranker)
+    # 2. Rerank documents
     from app.rag.rerank import rerank_docs
     ranked = rerank_docs(query, docs)
 
@@ -32,7 +29,10 @@ User question:
 Answer clearly and concisely.
 """
 
-    # 5. Generate answer using Gemini 1.5 Pro (new SDK)
-    response = model.generate_content(prompt)
+    # 5. Generate answer using Gemini 1.5 Pro
+    response = client.models.generate_content(
+        model="gemini-1.5-pro-latest",
+        contents=prompt
+    )
 
     return response.text
