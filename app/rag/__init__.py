@@ -1,60 +1,38 @@
 import os
-import google.generativeai as genai
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
+import google.genai as genai
 
-# Configure Gemini using environment variable
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Configure Gemini with your environment variable
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Load embeddings
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+# Use the correct model name for the new SDK
+model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
-# Load FAISS index from the correct folder and correct filename
-db = FAISS.load_local(
-    "app/rag/embeddings",
-    embeddings,
-    index_name="vectorstore",
-    allow_dangerous_deserialization=True
-)
+def rag_answer(query):
+    # 1. Retrieve documents (your existing retrieval code)
+    from app.rag.retrieval import retrieve_docs
+    docs = retrieve_docs(query)
 
-# Retrieval function
-def retrieve_docs(query: str, k: int = 3):
-    return db.similarity_search(query, k=k)
+    # 2. Rerank documents (your existing reranker)
+    from app.rag.rerank import rerank_docs
+    ranked = rerank_docs(query, docs)
 
-# Simple reranker
-def rerank_docs(query: str, docs, top_k: int = 3):
-    query_vec = embeddings.embed_query(query)
-    scored = []
+    # 3. Build context
+    context = "\n\n".join([doc.page_content for doc in ranked])
 
-    for doc in docs:
-        doc_vec = embeddings.embed_query(doc.page_content)
-        score = sum(q * d for q, d in zip(query_vec, doc_vec))
-        scored.append((score, doc))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [doc for _, doc in scored[:top_k]]
-
-# Full RAG answer using Gemini 1.5 Pro
-def rag_answer(question: str):
-    retrieved = retrieve_docs(question, k=8)
-    top_docs = rerank_docs(question, retrieved, top_k=3)
-
-    context = "\n\n".join(doc.page_content for doc in top_docs)
-
+    # 4. Build final prompt
     prompt = f"""
-You are an AI assistant answering questions strictly based on company policy documents.
+You are a policy assistant. Use ONLY the context below to answer.
 
 Context:
 {context}
 
-Question:
-{question}
+User question:
+{query}
 
-Answer:
-Provide a clear, concise, policy-grounded answer.
+Answer clearly and concisely.
 """
 
-    model = genai.GenerativeModel("gemini-1.5-pro")
+    # 5. Generate answer using Gemini 1.5 Pro (new SDK)
     response = model.generate_content(prompt)
 
     return response.text
