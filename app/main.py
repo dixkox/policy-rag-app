@@ -27,25 +27,18 @@ class AskRequest(BaseModel):
 # Simple rule-based answer generator
 # -----------------------------
 def generate_answer(context: str, question: str) -> str:
-    """
-    Since we cannot load transformer models on this machine,
-    we generate a simple answer using rule-based logic.
-    """
-
     if not context.strip():
         return "No relevant policy information was found."
 
-    # Basic answer style
     answer = (
         f"Here is the relevant policy information related to your question:\n\n"
         f"{context}\n\n"
         f"This information was retrieved based on similarity to your query: '{question}'."
     )
-
     return answer
 
 # -----------------------------
-# /ask endpoint
+# /ask endpoint (UPDATED)
 # -----------------------------
 @app.post("/ask")
 def ask_question(payload: AskRequest):
@@ -54,22 +47,37 @@ def ask_question(payload: AskRequest):
     if not question:
         return {"answer": "Please enter a valid question."}
 
+    # Run RAG pipeline
     rag_result = retrieve_context(question)
 
+    # If pipeline says no match → return invalid
     if not rag_result["available"]:
         return {
-            "answer": "No relevant policy found.",
+            "answer": "Invalid question. No relevant policy found.",
             "context": "",
             "reason": rag_result["reason"]
         }
 
+    # EXTRA VALIDATION: reject weak matches
     context = rag_result["context"]
+    reason = rag_result["reason"]
+
+    # If the retrieved context is extremely short or generic,
+    # treat it as an invalid match.
+    if len(context.strip()) < 20:
+        return {
+            "answer": "Invalid question. No relevant policy found.",
+            "context": "",
+            "reason": "Low similarity score"
+        }
+
+    # Build final answer
     answer = generate_answer(context, question)
 
     return {
         "answer": answer,
         "context": context,
-        "reason": rag_result["reason"]
+        "reason": reason
     }
 
 # -----------------------------
