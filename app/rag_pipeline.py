@@ -40,7 +40,7 @@ def build_tfidf_index(docs: list[str]):
         print("[RAG] No documents found. Empty TF-IDF index created.")
         return None, None
 
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words="english")
     doc_vectors = vectorizer.fit_transform(docs)
 
     print(f"[RAG] TF-IDF index built with {len(docs)} vectors.")
@@ -50,7 +50,7 @@ def build_tfidf_index(docs: list[str]):
 vectorizer, doc_vectors = build_tfidf_index(policy_docs)
 
 # -----------------------------
-# NEW: Safe Retrieval Function
+# NEW: Safe Retrieval Function (UPGRADED)
 # -----------------------------
 def retrieve_policy(query, vectorizer, docs, doc_vectors):
     query_vec = vectorizer.transform([query])
@@ -59,11 +59,14 @@ def retrieve_policy(query, vectorizer, docs, doc_vectors):
     best_score = scores.max()
     best_index = scores.argmax()
 
-    # Reject irrelevant matches
-    if best_score < 0.15:
-        return None  # <-- important: return None so answer_question can handle it
+    # Reject irrelevant matches (TF-IDF cosine similarity is usually low)
+    # 0.15 was too weak — upgraded to 0.25 for better filtering
+    threshold = 0.25
 
-    return docs[best_index]
+    if best_score < threshold:
+        return None, best_score  # return score for debugging
+
+    return docs[best_index], best_score
 
 # -----------------------------
 # Core RAG answer function (UPDATED)
@@ -76,17 +79,17 @@ def answer_question(query: str):
             "reason": "No policy documents are loaded."
         }
 
-    result = retrieve_policy(query, vectorizer, policy_docs, doc_vectors)
+    result, score = retrieve_policy(query, vectorizer, policy_docs, doc_vectors)
 
     if result is None:
         return {
             "available": False,
             "context": "",
-            "reason": "No relevant policy found."
+            "reason": f"Low similarity score ({score:.3f})"
         }
 
     return {
         "available": True,
         "context": result,
-        "reason": "Best match found."
+        "reason": f"Similarity score = {score:.3f}"
     }
