@@ -50,6 +50,22 @@ def build_tfidf_index(docs: list[str]):
 vectorizer, doc_vectors = build_tfidf_index(policy_docs)
 
 # -----------------------------
+# NEW: Safe Retrieval Function
+# -----------------------------
+def retrieve_policy(query, vectorizer, docs, doc_vectors):
+    query_vec = vectorizer.transform([query])
+    scores = cosine_similarity(query_vec, doc_vectors).flatten()
+
+    best_score = scores.max()
+    best_index = scores.argmax()
+
+    # Reject irrelevant matches
+    if best_score < 0.15:
+        return None  # <-- important: return None so answer_question can handle it
+
+    return docs[best_index]
+
+# -----------------------------
 # Core RAG answer function (UPDATED)
 # -----------------------------
 def answer_question(query: str):
@@ -60,31 +76,17 @@ def answer_question(query: str):
             "reason": "No policy documents are loaded."
         }
 
-    # Convert query to TF-IDF vector
-    query_vec = vectorizer.transform([query])
+    result = retrieve_policy(query, vectorizer, policy_docs, doc_vectors)
 
-    # Compute cosine similarity
-    similarities = cosine_similarity(query_vec, doc_vectors).flatten()
-
-    # Get ONLY the best match
-    best_index = similarities.argmax()
-    best_score = similarities[best_index]
-
-    # Stronger threshold
-    RELEVANCE_THRESHOLD = 0.15
-
-    if best_score < RELEVANCE_THRESHOLD:
+    if result is None:
         return {
             "available": False,
             "context": "",
             "reason": "No relevant policy found."
         }
 
-    # Return only the best chunk
-    context = policy_docs[best_index]
-
     return {
         "available": True,
-        "context": context,
+        "context": result,
         "reason": "Best match found."
     }
