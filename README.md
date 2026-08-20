@@ -1,8 +1,6 @@
-A Retrieval‑Augmented Generation (RAG) application that answers questions about company policies using TF‑IDF retrieval, similarity scoring, and guardrails. Built for the Quantic AI Engineering Project.
-
+README.md — Policy RAG Application (Quantic AI Engineering Project)
 📌 Project Overview
-The Policy RAG App is a lightweight Retrieval‑Augmented Generation system that allows users to ask questions about company policies and receive grounded, context‑based answers.
-It uses:
+The Policy RAG App is a lightweight Retrieval‑Augmented Generation (RAG) system that answers questions about company policies using:
 
 TF‑IDF vectorization
 
@@ -10,68 +8,99 @@ Cosine similarity retrieval
 
 Chunked policy documents
 
-A FastAPI backend
+FastAPI backend
 
-A simple frontend UI
+Simple HTML frontend
 
-Guardrails to reject irrelevant questions
+Guardrails for invalid questions
 
-This project satisfies the core requirements of the Quantic AI Engineering assignment.
+Citations (file + section heading)
+
+This project fulfills all core requirements of the Quantic AI Engineering Project, including ingestion, indexing, retrieval, evaluation, documentation, and reproducibility.
 
 📁 Repository Structure
 Code
 policy-rag-app/
 │
 ├── app/
-│   ├── main.py                 # FastAPI application
+│   ├── main.py                 # FastAPI backend
 │   ├── rag_pipeline.py         # TF-IDF ingestion, indexing, retrieval
-│   └── __init__.py
 │
 ├── data/
-│   └── policies/               # Policy .txt files (your corpus)
+│   └── policies/               # Policy .txt files
 │
 ├── frontend/
-│   └── index.html              # Simple UI (if included)
+│   └── index.html              # Simple UI (optional)
 │
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file
-├── design-and-evaluation.md    # Architecture + evaluation
-├── ai-tooling.md               # AI tools used
-└── .gitignore                  # Prevents heavy files from entering repo
+├── evaluation/
+│   └── evaluation_set.md       # Evaluation questions + results
+│
+├── requirements.txt
+├── README.md
+├── design-and-evaluation.md
+├── ai-tooling.md
+└── .gitignore
 ⚙️ Setup Instructions
 1. Clone the repository
 Code
-git clone <your-repo-url>
+git clone https://github.com/dixkox/policy-rag-app.git
 cd policy-rag-app
 2. Create a virtual environment
 Code
 python -m venv venv
-source venv/bin/activate      # macOS/Linux
 venv\Scripts\activate         # Windows
+source venv/bin/activate      # macOS/Linux
 3. Install dependencies
 Code
 pip install -r requirements.txt
 4. Add policy documents
-Place your .txt policy files inside:
+Place your .txt files inside:
 
 Code
 data/policies/
 Each file should contain headings like:
 
 Code
-# Code of Conduct
 # PTO Policy
+# Code of Conduct
 # Security Policy
-The system automatically chunks by headings.
-
 🚀 Running the Application
-Start the FastAPI server:
+Start the FastAPI backend
+Run from the project root:
+
 Code
 uvicorn app.main:app --reload
-Visit the frontend (if included):
+Backend will be available at:
+
 Code
 http://127.0.0.1:8000
-API Endpoint:
+🌐 Start the Frontend (port 5500)
+Option 1 — VS Code Live Server (recommended)
+Open the project in VS Code
+
+Navigate to frontend/index.html
+
+Right‑click the file
+
+Select “Open with Live Server”
+
+Your browser will automatically open:
+
+Code
+http://localhost:5500/
+This is your active frontend URL.
+
+Option 2 — Python static server
+If you prefer running manually:
+
+Code
+cd frontend
+python -m http.server 5500
+Then open:
+
+Code
+http://localhost:5500/
+🔌 API Usage
 POST /ask
 Request:
 
@@ -84,51 +113,44 @@ Response:
 json
 {
   "answer": "Here is the relevant policy information...",
-  "context": "...",
-  "reason": "Similarity score = 0.312"
+  "context": "# PTO Policy\nEmployees accrue PTO...",
+  "reason": "Similarity score = 0.312",
+  "citation": {
+    "file": "pto_policy.txt",
+    "section": "PTO Policy"
+  }
 }
-🧠 How the RAG Pipeline Works
-1. Ingestion
-Loads .txt policy files
-
-Splits them into chunks using headings
-
-Cleans text
-
-2. Indexing
-TF‑IDF vectorizer
-
-Cosine similarity matrix
-
-Stored in memory (lightweight)
-
-3. Retrieval
-Query → TF‑IDF vector
-
-Cosine similarity against all chunks
-
-Best match selected
-
-Threshold applied (rejects irrelevant queries)
-
-4. Guardrails
-If similarity < 0.25:
-
+GET /health
 Code
-Invalid question. No relevant policy found.
-5. Answer Generation
-A rule‑based generator formats the answer and includes:
+http://127.0.0.1:8000/health
+Response:
 
-Retrieved context
+json
+{ "status": "ok" }
+🧠 RAG Pipeline Summary
+Ingestion  
+Loads .txt files → splits by headings → cleans text.
 
-Query
+Indexing  
+TF‑IDF vectorizer → sparse matrix stored in memory.
 
-Similarity score
+Retrieval  
+Query → TF‑IDF → cosine similarity → best chunk selected.
 
-(Optional) Citation
+Guardrails  
+If similarity < 0.25, the question is rejected.
+
+Answer Generation  
+Returns context + similarity score + citation.
 
 🧪 Evaluation
-Evaluation details are in design-and-evaluation.md, including:
+Full evaluation is documented in:
+
+design-and-evaluation.md
+
+evaluation/evaluation_set.md
+
+Includes:
 
 Groundedness
 
@@ -136,34 +158,23 @@ Citation accuracy
 
 Latency (p50/p95)
 
-Evaluation question set (15–30 items)
+30‑question evaluation set
 
 🛠️ AI Tools Used
-Documented in ai-tooling.md, including:
+Documented in:
+
+ai-tooling.md
+
+Tools include:
 
 Microsoft Copilot
 
 Cursor IDE
 
-Gemini 1.5 Pro (for code generation)
-
-Automated debugging assistance
-
-🌐 Deployment (Optional)
-You may deploy using:
-
-Render
-
-Railway
-
-HuggingFace Spaces
-
-Docker + any cloud provider
-
-Deployment instructions (if used) are in deployed.md.
+Gemini 1.5 Pro
 
 🎥 Demo Video Requirements
-Your submission must include a 5–10 minute demo showing:
+Your 5–10 minute demo must show:
 
 App running
 
@@ -184,19 +195,20 @@ All group members present
 
 [x] FastAPI backend
 
+[x] Citations added
+
 [x] Clean GitHub repo
 
-[ ] README.md (this file)
+[x] README.md
 
-[ ] design-and-evaluation.md
+[x] design-and-evaluation.md
 
-[ ] ai-tooling.md
+[x] ai-tooling.md
 
-[ ] Evaluation set
+[x] Evaluation set
 
-[ ] Demo video
+[x] CI/CD workflow
+
+[ ] Demo video (final step)
 
 [ ] Optional deployment
-
-[ ] CI/CD workflow
-
