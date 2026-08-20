@@ -5,14 +5,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 
 # -----------------------------
-# Load and chunk policy documents
+# Load and chunk policy documents WITH FILENAMES
 # -----------------------------
-def load_policy_docs(folder: str = "data/policies") -> list[str]:
-
+def load_policy_docs(folder: str = "data/policies"):
     docs = []
+    filenames = []
+
     if not os.path.isdir(folder):
         print(f"[RAG] Policy folder not found: {folder}")
-        return docs
+        return docs, filenames
 
     for filename in os.listdir(folder):
         if filename.endswith(".txt"):
@@ -25,17 +26,18 @@ def load_policy_docs(folder: str = "data/policies") -> list[str]:
             chunks = ["# " + c.strip() for c in chunks if c.strip()]
 
             docs.extend(chunks)
+            filenames.extend([filename] * len(chunks))
 
     print(f"[RAG] Loaded {len(docs)} policy chunks.")
-    return docs
+    return docs, filenames
 
 
-policy_docs = load_policy_docs()
+policy_docs, policy_filenames = load_policy_docs()
 
 # -----------------------------
 # Build TF-IDF index
 # -----------------------------
-def build_tfidf_index(docs: list[str]):
+def build_tfidf_index(docs):
     if not docs:
         print("[RAG] No documents found. Empty TF-IDF index created.")
         return None, None
@@ -50,46 +52,55 @@ def build_tfidf_index(docs: list[str]):
 vectorizer, doc_vectors = build_tfidf_index(policy_docs)
 
 # -----------------------------
-# NEW: Safe Retrieval Function (UPGRADED)
+# Safe Retrieval Function WITH CITATIONS
 # -----------------------------
-def retrieve_policy(query, vectorizer, docs, doc_vectors):
+def retrieve_policy(query, vectorizer, docs, doc_vectors, filenames):
     query_vec = vectorizer.transform([query])
     scores = cosine_similarity(query_vec, doc_vectors).flatten()
 
     best_score = scores.max()
     best_index = scores.argmax()
 
-    # Reject irrelevant matches (TF-IDF cosine similarity is usually low)
-    # 0.15 was too weak — upgraded to 0.25 for better filtering
     threshold = 0.25
 
     if best_score < threshold:
-        return None, best_score  # return score for debugging
+        return None, best_score, None, None
 
-    return docs[best_index], best_score
+    citation_file = filenames[best_index]
+    citation_heading = docs[best_index].split("\n")[0].replace("# ", "").strip()
+
+    return docs[best_index], best_score, citation_file, citation_heading
 
 # -----------------------------
-# Core RAG answer function (UPDATED)
+# Core RAG answer function WITH CITATIONS
 # -----------------------------
 def answer_question(query: str):
     if vectorizer is None or doc_vectors is None:
         return {
             "available": False,
             "context": "",
-            "reason": "No policy documents are loaded."
+            "reason": "No policy documents are loaded.",
+            "citation": None
         }
 
-    result, score = retrieve_policy(query, vectorizer, policy_docs, doc_vectors)
+    result, score, citation_file, citation_heading = retrieve_policy(
+        query, vectorizer, policy_docs, doc_vectors, policy_filenames
+    )
 
     if result is None:
         return {
             "available": False,
             "context": "",
-            "reason": f"Low similarity score ({score:.3f})"
+            "reason": f"Low similarity score ({score:.3f})",
+            "citation": None
         }
 
     return {
         "available": True,
         "context": result,
-        "reason": f"Similarity score = {score:.3f}"
+        "reason": f"Similarity score = {score:.3f}",
+        "citation": {
+            "file": citation_file,
+            "section": citation_heading
+        }
     }

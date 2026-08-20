@@ -1,205 +1,202 @@
-Policy RAG App
-A lightweight Retrieval‑Augmented Generation (RAG) system that answers employee questions about company policies using TF‑IDF similarity search.
-Built as part of the Quantic MBA Capstone Project.
+A Retrieval‑Augmented Generation (RAG) application that answers questions about company policies using TF‑IDF retrieval, similarity scoring, and guardrails. Built for the Quantic AI Engineering Project.
 
 📌 Project Overview
-The Policy RAG App allows employees to ask natural‑language questions about company policies (Holiday Policy, PTO, Remote Work, Expense Policy, etc.).
-The backend retrieves the most relevant policy section using TF‑IDF + cosine similarity, and the frontend displays the answer cleanly.
+The Policy RAG App is a lightweight Retrieval‑Augmented Generation system that allows users to ask questions about company policies and receive grounded, context‑based answers.
+It uses:
 
-This project demonstrates:
+TF‑IDF vectorization
 
-Practical RAG implementation
+Cosine similarity retrieval
 
-Policy chunking and indexing
+Chunked policy documents
 
-FastAPI backend
+A FastAPI backend
 
-TF‑IDF vector search
+A simple frontend UI
 
-Frontend integration
+Guardrails to reject irrelevant questions
 
-Clean architecture and documentation
+This project satisfies the core requirements of the Quantic AI Engineering assignment.
 
-🚀 Features
-Accurate policy retrieval using TF‑IDF
-
-Clean chunking based on policy headings
-
-FastAPI backend with /ask endpoint
-
-Simple HTML/JS frontend
-
-Lightweight — no transformers required
-
-Works on low‑memory machines
-
-Easy to extend with PDFs or semantic search
-
-🧠 How the RAG Pipeline Works
-1. Load Policies
-All .txt files inside data/policies/ are loaded.
-Each file may contain multiple policies separated by headings like:
-
-Code
-# Company Holiday Policy
-# Remote Work Policy
-# Expense Reimbursement Policy
-2. Chunking by Headings
-Policies are split using:
-
-Code
-# Policy Title
-This ensures each policy becomes its own chunk.
-
-3. TF‑IDF Vectorization
-Each chunk is converted into a TF‑IDF vector.
-
-4. Cosine Similarity Search
-User queries are compared against all policy vectors.
-
-5. Best‑Match Retrieval
-Only the single best policy chunk is returned.
-
-🏗️ Architecture Diagram
-Code
-Frontend (HTML + JS)
-        |
-        v
-POST /ask
-        |
-FastAPI Backend
-        |
-RAG Pipeline (TF‑IDF)
-        |
-Policy Store (TXT files)
-        |
-Best Policy Chunk
-        |
-Frontend Display
-📁 Project Structure
+📁 Repository Structure
 Code
 policy-rag-app/
 │
 ├── app/
-│   ├── main.py
-│   ├── rag_pipeline.py
+│   ├── main.py                 # FastAPI application
+│   ├── rag_pipeline.py         # TF-IDF ingestion, indexing, retrieval
+│   └── __init__.py
 │
 ├── data/
-│   ├── policies/
-│       ├── holiday_policy.txt
-│       ├── pto_policy.txt
-│       ├── remote_work_policy.txt
-│       ├── expense_policy.txt
-│       ├── parental_leave_policy.txt
-│       ├── code_of_conduct.txt
-│       ├── security_policy.txt
+│   └── policies/               # Policy .txt files (your corpus)
 │
 ├── frontend/
-│   ├── index.html
-│   ├── script.js
+│   └── index.html              # Simple UI (if included)
 │
-└── README.md
-⚙️ How to Run the App
-Backend (FastAPI)
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+├── design-and-evaluation.md    # Architecture + evaluation
+├── ai-tooling.md               # AI tools used
+└── .gitignore                  # Prevents heavy files from entering repo
+⚙️ Setup Instructions
+1. Clone the repository
 Code
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-Backend runs at:
+git clone <your-repo-url>
+cd policy-rag-app
+2. Create a virtual environment
+Code
+python -m venv venv
+source venv/bin/activate      # macOS/Linux
+venv\Scripts\activate         # Windows
+3. Install dependencies
+Code
+pip install -r requirements.txt
+4. Add policy documents
+Place your .txt policy files inside:
 
+Code
+data/policies/
+Each file should contain headings like:
+
+Code
+# Code of Conduct
+# PTO Policy
+# Security Policy
+The system automatically chunks by headings.
+
+🚀 Running the Application
+Start the FastAPI server:
+Code
+uvicorn app.main:app --reload
+Visit the frontend (if included):
 Code
 http://127.0.0.1:8000
-Frontend (Static Server)
-Code
-cd frontend
-python -m http.server 5500
-Frontend runs at:
+API Endpoint:
+POST /ask
+Request:
+
+json
+{
+  "question": "What is the PTO policy?"
+}
+Response:
+
+json
+{
+  "answer": "Here is the relevant policy information...",
+  "context": "...",
+  "reason": "Similarity score = 0.312"
+}
+🧠 How the RAG Pipeline Works
+1. Ingestion
+Loads .txt policy files
+
+Splits them into chunks using headings
+
+Cleans text
+
+2. Indexing
+TF‑IDF vectorizer
+
+Cosine similarity matrix
+
+Stored in memory (lightweight)
+
+3. Retrieval
+Query → TF‑IDF vector
+
+Cosine similarity against all chunks
+
+Best match selected
+
+Threshold applied (rejects irrelevant queries)
+
+4. Guardrails
+If similarity < 0.25:
 
 Code
-http://localhost:5500
-📝 Example Queries
-Try these in the frontend:
+Invalid question. No relevant policy found.
+5. Answer Generation
+A rule‑based generator formats the answer and includes:
 
-“What is the holiday policy?”
+Retrieved context
 
-“How does PTO work?”
+Query
 
-“Can employees work remotely?”
+Similarity score
 
-“What is the parental leave policy?”
+(Optional) Citation
 
-“How do I submit expenses?”
+🧪 Evaluation
+Evaluation details are in design-and-evaluation.md, including:
 
-📊 Evaluation (Rubric Requirement)
-Strengths
-Fast and lightweight
+Groundedness
 
-Works on low‑memory machines
+Citation accuracy
 
-Accurate retrieval for structured policies
+Latency (p50/p95)
 
-Easy to maintain and extend
+Evaluation question set (15–30 items)
 
-No dependency on large transformer models
+🛠️ AI Tools Used
+Documented in ai-tooling.md, including:
 
-Weaknesses
-TF‑IDF cannot understand deep semantics
+Microsoft Copilot
 
-No summarization or generative answers
+Cursor IDE
 
-Requires clean policy formatting
+Gemini 1.5 Pro (for code generation)
 
-Why TF‑IDF Instead of Transformers
-Your machine cannot load transformer models due to memory limits.
-TF‑IDF provides reliable retrieval without requiring GPU or large RAM.
+Automated debugging assistance
 
-Performance
-Retrieval time: < 10ms
+🌐 Deployment (Optional)
+You may deploy using:
 
-Indexing time: < 1s
+Render
 
-Works instantly for small policy sets
+Railway
 
-🔮 Future Improvements
-Add PDF policy ingestion
+HuggingFace Spaces
 
-Add semantic embeddings (MiniLM)
+Docker + any cloud provider
 
-Add answer summarization
+Deployment instructions (if used) are in deployed.md.
 
-Add admin dashboard
+🎥 Demo Video Requirements
+Your submission must include a 5–10 minute demo showing:
 
-Deploy backend to Azure
+App running
 
-Deploy frontend to Vercel
+Architecture explanation
 
-📸 Screenshots
-Add screenshots here:
+Evaluation results
 
-Code
-/screenshots/
-<<<<<<< HEAD
-    backend_running.png
-    frontend_ui.png
-    example_query.png
-📬 Contact
-Tinubu Damilola Frank
-London, Ontario
-Founder, Dixkox Inc.
-Technology & Human-Centred Intelligent Systems Company, 
-=======
-📝 License
-MIT License.
+Your ID
 
-👤 Author
-Tinubu Damilola  
-Founder @ Dixkox Inc.
-MSSE Artificial Intelligence Engineering Candidate (2026)
+All group members present
 
-⭐ This version is correct, complete, and rubric‑ready.
-Your next step is:
+✔️ Submission Checklist
+[x] RAG pipeline implemented
 
-👉 Commit the updated README.md
-Code
-git add README.md
-git commit -m "Updated README.md"
-git push
->>>>>>> f783966c988a8bafcb34ae559ccefcdf75009fdb
+[x] TF‑IDF ingestion + indexing
+
+[x] Retrieval + guardrails
+
+[x] FastAPI backend
+
+[x] Clean GitHub repo
+
+[ ] README.md (this file)
+
+[ ] design-and-evaluation.md
+
+[ ] ai-tooling.md
+
+[ ] Evaluation set
+
+[ ] Demo video
+
+[ ] Optional deployment
+
+[ ] CI/CD workflow
+

@@ -38,7 +38,7 @@ def generate_answer(context: str, question: str) -> str:
     return answer
 
 # -----------------------------
-# /ask endpoint (UPDATED)
+# /ask endpoint (UPDATED WITH CITATIONS)
 # -----------------------------
 @app.post("/ask")
 def ask_question(payload: AskRequest):
@@ -47,42 +47,44 @@ def ask_question(payload: AskRequest):
     if not question:
         return {"answer": "Please enter a valid question."}
 
-    # Run RAG pipeline
     rag_result = retrieve_context(question)
 
-    # If pipeline says no match → return invalid
     if not rag_result["available"]:
         return {
             "answer": "Invalid question. No relevant policy found.",
             "context": "",
-            "reason": rag_result["reason"]
+            "reason": rag_result["reason"],
+            "citation": None
         }
 
-    # EXTRA VALIDATION: reject weak matches
     context = rag_result["context"]
     reason = rag_result["reason"]
+    citation = rag_result["citation"]
 
-    # If the retrieved context is extremely short or generic,
-    # treat it as an invalid match.
     if len(context.strip()) < 20:
         return {
             "answer": "Invalid question. No relevant policy found.",
             "context": "",
-            "reason": "Low similarity score"
+            "reason": "Low similarity score",
+            "citation": None
         }
 
-    # Build final answer
     answer = generate_answer(context, question)
 
     return {
         "answer": answer,
         "context": context,
-        "reason": reason
+        "reason": reason,
+        "citation": citation
     }
 
 # -----------------------------
 # Root endpoint
 # -----------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 @app.get("/")
 def home():
     return {"message": "Policy RAG API is running (TF-IDF version)."}
