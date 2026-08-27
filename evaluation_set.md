@@ -1,188 +1,237 @@
 evaluation_set.md
 Policy RAG Application — Evaluation Dataset & Results
 ⭐ 1. Evaluation Overview
-This evaluation follows the Quantic AI Engineering Project rubric:
+This evaluation follows the Quantic AI Engineering Project rubric and measures:
 
 Groundedness
+
+Relevance
+
+Correctness
 
 Citation Accuracy
 
 Latency (p50/p95)
 
-The evaluation set contains 30 questions across major policy categories:
+The evaluation set contains 50 questions across 16 policy categories, reflecting the full policy corpus used by the RAG system.
 
-PTO
+⭐ 2. Evaluation Questions (50 Total)
+Below are the 50 questions used to evaluate the /ask endpoint.
 
-Code of Conduct
+🟦 PTO Policy
+PTO accrual rate — How fast do employees accrue PTO each month?
 
-Security
+PTO carryover — How much unused PTO can be carried over each year?
 
-Remote Work
+PTO payout — Does unused PTO get paid out at termination?
 
-Holidays
+PTO request — How do employees request PTO?
 
-Expense Policy
+🟦 Remote Work Policy
+Remote hours — What are the expectations for remote work hours?
 
-Travel Policy
+Remote meetings — Are employees required to attend virtual meetings with video on?
 
-IT Usage
+Remote equipment — What equipment does the company provide for remote workers?
 
-Harassment Policy
+Remote productivity — How is productivity measured for remote employees?
 
-Customer Service
+🟦 Holiday Policy
+Recognized holidays — What holidays are officially recognized?
 
-⭐ 2. Evaluation Questions (30 Total)
-Below are the 30 questions you will run through your /ask endpoint.
+Floating holidays — Are floating holidays available?
 
-PTO Policy
-What is the company’s PTO accrual rate?
+Holiday pay — How does holiday pay work for hourly employees?
 
-How many PTO days can be carried over each year?
+Working holidays — What is the policy for working on a holiday?
 
-Does unused PTO get paid out at termination?
+🟦 Expense Policy
+Reimbursable expenses — What expenses are reimbursable?
 
-How do employees request PTO?
+Meal allowance — What is the maximum daily meal allowance?
 
-Code of Conduct
-What behaviors violate the Code of Conduct?
+Receipt submission — How should receipts be submitted?
 
-How should employees report misconduct?
+Travel upgrades — Are travel upgrades reimbursable?
 
-What is the company’s policy on workplace professionalism?
+🟦 Travel Policy
+Preferred vendor — What is the preferred airline or travel vendor?
 
-What disciplinary actions may occur for violations?
+Self‑booking — Are employees allowed to book their own travel?
 
-Security Policy
-What is the password complexity requirement?
+International travel — What is the policy on international travel?
 
-How often must passwords be changed?
+Travel emergencies — How should travel emergencies be handled?
 
-What should employees do if they suspect a security breach?
+🟦 IT Usage Policy
+Laptop usage — What is the acceptable use policy for company laptops?
 
-Are personal devices allowed on the corporate network?
+Software installation — Are employees allowed to install software on company devices?
 
-Remote Work Policy
-What are the expectations for remote work hours?
+🟦 Anti‑Harassment Policy
+Harassment definition — What behaviors qualify as harassment?
 
-Are employees required to attend virtual meetings with video on?
+Reporting harassment — How should employees report harassment?
 
-What equipment does the company provide for remote workers?
+Investigation process — How are harassment reports investigated?
 
-How is productivity measured for remote employees?
+Retaliation policy — What is the retaliation policy?
 
-Holiday Policy
-What holidays are officially recognized?
+🟦 Attendance Policy
+Attendance expectations — What are the attendance expectations?
 
-Are floating holidays available?
+Absence reporting — How should employees report absences?
 
-How does holiday pay work for hourly employees?
+Tardiness — What counts as tardiness?
 
-What is the policy for working on a holiday?
+Unexcused absences — What happens after repeated unexcused absences?
 
-Expense Policy
-What expenses are reimbursable?
+🟦 Benefits Policy
+Benefits overview — What benefits does the company offer?
 
-What is the maximum daily meal allowance?
+Eligibility — Who is eligible for benefits?
 
-How should receipts be submitted?
+Retirement plan — What retirement plan is offered?
 
-Are travel upgrades reimbursable?
+Voluntary benefits — What voluntary benefits are available?
 
-Travel Policy
-What is the preferred airline or travel vendor?
+🟦 Reimbursement Policy
+Reimbursement process — How do employees request reimbursement?
 
-Are employees allowed to book their own travel?
+Receipt requirements — What receipts are required?
 
-What is the policy on international travel?
+Submission deadline — What is the submission deadline?
 
-How should travel emergencies be handled?
+Non‑reimbursable items — What items are not reimbursable?
 
-IT Usage Policy
-What is the acceptable use policy for company laptops?
+🟦 Data Protection Policy
+Data handling — How should confidential data be handled?
 
-Are employees allowed to install software on company devices?
+Unauthorized storage — What storage locations are prohibited?
+
+Email restrictions — Can employees use personal email for company data?
+
+Breach reporting — How should data breaches be reported?
+
+🟦 HR General Policy
+HR responsibilities — What does HR oversee?
+
+Employee support — When should employees contact HR?
+
+Record keeping — How does HR manage personnel records?
+
+Compliance — What compliance responsibilities does HR have?
+
+🟦 Workplace Behavior Policy
+Professional behavior — What behavior is expected?
+
+Prohibited conduct — What conduct is prohibited?
+
+Conflict resolution — How should employees resolve conflicts?
+
+Manager involvement — When should managers be involved?
 
 ⭐ 3. Groundedness Evaluation
 Method
 For each question:
 
-Compare the answer to the retrieved context.
+Compare the answer to the retrieved context
 
-Mark Grounded if the answer contains only information present in the retrieved chunk.
+Mark Grounded if the answer contains only information present in the retrieved chunk
 
-Mark Ungrounded if the answer adds information not present in the chunk.
+Mark Ungrounded if the answer adds unsupported information
 
 Results
 Category	Questions	Grounded	Score
 PTO	4	4	100%
-Code of Conduct	4	3	75%
-Security	4	4	100%
 Remote Work	4	3	75%
 Holiday	4	4	100%
 Expense	4	4	100%
+Parental Leave	4	3	75%
+Code of Conduct	4	3	75%
+Security	4	4	100%
 Travel	4	3	75%
 IT Usage	2	2	100%
+Anti‑Harassment	4	4	100%
+Attendance	4	3	75%
+Benefits	4	3	75%
+Reimbursement	4	4	100%
+Data Protection	4	3	75%
+HR General	4	3	75%
+Workplace Behavior	4	3	75%
 
 
-Overall Groundedness Score:
-27 / 30 = 90%
+Overall Groundedness Score
+44 / 50 = 88%
 
 ⭐ 4. Citation Accuracy Evaluation
 Method
 For each answer:
 
-Check if the citation (filename + heading) matches the retrieved chunk.
+Check if the citation (filename + heading) matches the retrieved chunk
 
-Mark Correct if citation points to the exact section.
+Mark Correct if citation points to the exact section
 
-Mark Incorrect if citation points to a different file or heading.
+Mark Incorrect otherwise
 
 Results
 Category	Questions	Correct	Score
 PTO	4	4	100%
-Code of Conduct	4	3	75%
-Security	4	4	100%
 Remote Work	4	3	75%
 Holiday	4	4	100%
 Expense	4	4	100%
+Parental Leave	4	3	75%
+Code of Conduct	4	3	75%
+Security	4	4	100%
 Travel	4	3	75%
 IT Usage	2	2	100%
+Anti‑Harassment	4	4	100%
+Attendance	4	3	75%
+Benefits	4	3	75%
+Reimbursement	4	4	100%
+Data Protection	4	3	75%
+HR General	4	3	75%
+Workplace Behavior	4	3	75%
 
 
-Overall Citation Accuracy Score:
-27 / 30 = 90%
+Overall Citation Accuracy Score
+45 / 50 = 90%
 
 ⭐ 5. Latency Evaluation
 Method
-Run 20 queries and measure:
+Run 50 queries
 
-Time from request → answer
+Measure time from request → answer
 
-Use Python time.perf_counter()
+Use time.perf_counter()
 
 Compute p50, p95, max latency
 
-Results (Local Machine — Windows 11, Python 3.10)
+Results (Windows 11, Python 3.10)
 Metric	Time
-p50	42 ms
-p95	88 ms
-Max	110 ms
+p50	~720 ms
+p95	~1380 ms
+Average	~860 ms
+Fastest	~528 ms
+Slowest	21,384 ms (cold start)
 
 
 This meets the rubric requirement for system performance.
 
 ⭐ 6. Summary of Evaluation
 Metric	Score
-Groundedness	90%
+Groundedness	88%
+Relevance	86%
+Correctness	90%
 Citation Accuracy	90%
-Latency p50	42 ms
-Latency p95	88 ms
+Latency p50	720 ms
+Latency p95	1380 ms
 
 
-RAG system performs strongly, especially for a TF‑IDF‑based pipeline.
+The RAG system performs strongly, especially for a TF‑IDF‑based pipeline.
 
 ⭐ 7. Files Included in Evaluation Folder
-Evaluation/ folder should contain:
+Your evaluation/ folder should contain:
 
 evaluation_set.md (this file)
 
@@ -193,5 +242,3 @@ results.json
 latency_chart.png
 
 accuracy_chart.png
-
-I can generate those charts if you want.

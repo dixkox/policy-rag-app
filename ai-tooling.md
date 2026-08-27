@@ -1,8 +1,8 @@
 ai-tooling.md
-AI Tooling Usage for the Policy RAG Application
+AI Tooling Usage for the Policy RAG Application (Quantic AI Engineering Project)
 1. Overview
 This document explains how AI tools were used during the development of the Policy RAG Application, built for the Quantic AI Engineering Project.
-AI tooling played a major role in accelerating development, debugging, architecture design, and documentation.
+AI tooling accelerated development, debugging, architecture design, policy generation, and documentation while maintaining full academic integrity.
 
 The tools used include:
 
@@ -10,78 +10,83 @@ Microsoft Copilot
 
 Cursor IDE (AI pair programmer)
 
-Gemini 1.5 Pro (code generation + architecture reasoning)
+Gemini 1.5 Pro
 
-Copilot Chat (debugging + refactoring)
+Copilot Chat
 
-These tools helped produce a clean, functional, reproducible RAG system while maintaining full academic integrity.
+These tools helped produce a clean, functional, reproducible RAG system with a complete 16‑policy dataset, 50‑question evaluation, and automated policy generation scripts.
 
 2. AI Tools Used
 2.1 Microsoft Copilot
 Used for:
 
-Explaining TF‑IDF retrieval concepts
+Explaining TF‑IDF retrieval and cosine similarity
 
-Helping design guardrails for invalid questions
+Designing guardrails for invalid questions
 
-Debugging FastAPI routing issues
+Debugging FastAPI routing and JSON responses
 
 Rewriting documentation (README, design docs, evaluation)
 
-Generating structured code blocks
+Generating structured Python code
 
-Fixing retrieval scoring logic
+Helping create the 16‑policy dataset
 
-What worked well:  
-Copilot was excellent at:
+Improving the evaluation scoring templates
 
-Producing clean Python code
+What worked well:
 
-Explaining errors
+Produced clean, readable Python code
 
-Suggesting fixes for retrieval logic
+Excellent at explaining errors and suggesting fixes
 
-Helping rewrite documentation in a professional format
+Strong at rewriting documentation professionally
+
+Helped refine the RAG pipeline logic
 
 Limitations:
 
-Sometimes produced overly complex RAG architectures
+Sometimes suggested overly complex architectures (FAISS, embeddings)
 
-Needed manual simplification to match project requirements
+Needed simplification to meet Quantic’s “free‑tier” requirement
 
 2.2 Cursor IDE (AI Pair Programmer)
 Used for:
 
 Auto‑generating project scaffolding
 
-Creating folder structure
+Creating folder structure (app/, data/, scripts/)
 
 Refactoring Python modules
 
-Debugging import errors
+Debugging import errors and path issues
 
 Running automated code actions
 
+Rebuilding the project after accidental folder deletion
+
+Assisting with the policy‑generation script
+
 What worked well:
 
-Cursor’s “Fix” and “Explain” features helped resolve TF‑IDF vectorization errors
+“Fix” and “Explain” features resolved TF‑IDF vectorization errors
 
-Great for cleaning up old RAG code
+Cleaned up old RAG code
 
-Helped rebuild the project after accidental folder deletion
+Helped maintain consistent formatting across modules
 
 Limitations:
 
-Sometimes suggested LangChain or FAISS even though TF‑IDF was required
+Sometimes suggested LangChain or FAISS (not allowed for this project)
 
-Needed manual control to keep the project lightweight
+Needed manual control to keep the system lightweight
 
 2.3 Gemini 1.5 Pro
 Used for:
 
-Designing the architecture
+Designing the initial architecture
 
-Generating evaluation questions
+Generating evaluation questions (expanded to 50)
 
 Writing documentation drafts
 
@@ -89,19 +94,23 @@ Explaining chunking strategies
 
 Suggesting improvements to guardrails
 
+Helping design the 16‑policy dataset
+
 What worked well:
 
 Excellent at generating structured documents
 
-Very strong at architecture reasoning
+Strong architecture reasoning
 
 Helped produce evaluation metrics and question sets
 
+Useful for policy text generation
+
 Limitations:
 
-Sometimes produced too advanced RAG designs (semantic embeddings, re‑ranking)
+Sometimes produced advanced RAG designs (semantic embeddings, reranking)
 
-Needed simplification to meet Quantic’s “free-tier” requirement
+Needed simplification to meet Quantic’s “zero‑cost” requirement
 
 2.4 Copilot Chat (Debugging Assistant)
 Used for:
@@ -114,27 +123,31 @@ Debugging frontend fetch failures
 
 Cleaning GitHub repo
 
-Removing heavy files (venv, dist-info, caches)
+Removing heavy files (venv, dist‑info, caches)
+
+Helping validate the ingestion of all 16 policies
 
 What worked well:
 
 Very effective at debugging
 
-Helped clean the repo to <10MB
+Helped reduce repo size to <10MB
 
-Ensured reproducibility
+Ensured reproducibility and clean structure
 
 Limitations:
 
-Sometimes misinterpreted frontend errors as backend issues
+Occasionally misinterpreted frontend errors as backend issues
 
 3. How AI Tools Improved Development
 3.1 Speed
-AI tools reduced development time significantly:
+AI tools significantly reduced development time:
 
 RAG pipeline built in hours instead of days
 
-Documentation generated quickly
+16‑policy dataset generated quickly
+
+Documentation produced rapidly
 
 Debugging accelerated
 
@@ -149,6 +162,8 @@ Add guardrails
 
 Fix retrieval scoring
 
+Maintain consistent formatting
+
 3.3 Architecture Decisions
 AI tools helped justify:
 
@@ -160,16 +175,20 @@ Cosine similarity retrieval
 
 Threshold‑based guardrails
 
+Deterministic, zero‑cost design
+
 3.4 Evaluation
 AI tools helped generate:
 
-Evaluation questions
+50 evaluation questions
 
 Groundedness checks
 
 Citation accuracy tests
 
 Latency measurement scripts
+
+Evaluation templates
 
 4. What Didn’t Work Well
 4.1 Overly Complex Suggestions
@@ -183,7 +202,7 @@ Pinecone
 
 Semantic embeddings
 
-Multi‑stage re‑ranking
+Multi‑stage reranking
 
 These were beyond the scope of the project and had to be simplified.
 
@@ -206,6 +225,7 @@ AI tools were used as assistants, not as replacements for engineering work.
 All architectural decisions, debugging, evaluation, and integration were performed manually, with AI providing guidance, drafts, and suggestions.
 
 No external copyrighted code or proprietary policy documents were used.
+All policy documents were synthetically generated for this project.
 
 6. Conclusion
 AI tooling significantly improved:
@@ -217,5 +237,9 @@ Code quality
 Documentation clarity
 
 Debugging efficiency
+
+Dataset generation
+
+Evaluation completeness
 
 The final Policy RAG Application is a result of human engineering supported by AI tools, aligned with Quantic’s expectations for responsible AI‑assisted development.

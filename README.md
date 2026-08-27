@@ -1,25 +1,25 @@
-README.md — Policy RAG Application (Quantic AI Engineering Project)
-📌 Project Overview
-The Policy RAG App is a lightweight Retrieval‑Augmented Generation (RAG) system that answers questions about company policies using:
+# Policy RAG Application — Quantic AI Engineering Project
 
-TF‑IDF vectorization
+## 📌 Project Overview
+The Policy‑RAG‑App is a lightweight Retrieval‑Augmented Generation (RAG) system that answers questions about company policies using a fully deterministic classical NLP pipeline. It fulfills all core requirements of the Quantic AI Engineering Project, including ingestion, indexing, retrieval, evaluation, documentation, and reproducibility.
 
-Cosine similarity retrieval
+The system includes:
 
-Chunked policy documents
+- TF‑IDF vectorization (scikit‑learn)
+- Cosine similarity retrieval
+- Heading‑based chunking
+- FastAPI backend
+- Simple HTML frontend
+- Guardrails for invalid questions
+- Citations (file + section heading)
+- Full evaluation across 16 policies
 
-FastAPI backend
+This project is designed for clarity, reproducibility, and ease of debugging.
 
-Simple HTML frontend
+---
 
-Guardrails for invalid questions
+## 📁 Repository Structure
 
-Citations (file + section heading)
-
-This project fulfills all core requirements of the Quantic AI Engineering Project, including ingestion, indexing, retrieval, evaluation, documentation, and reproducibility.
-
-📁 Repository Structure
-Code
 policy-rag-app/
 │
 ├── app/
@@ -27,84 +27,149 @@ policy-rag-app/
 │   ├── rag_pipeline.py         # TF-IDF ingestion, indexing, retrieval
 │
 ├── data/
-│   └── policies/               # Policy .txt files
+│   ├── policies/               # Policy .txt files (used by RAG)
+│   └── raw/                    # Markdown versions of policies
+│
+├── scripts/
+│   └── generate_policies.py    # Auto-generates missing .txt and .md policies
 │
 ├── frontend/
-│   └── index.html              # Simple UI (optional)
+│   └── index.html              # Simple UI
 │
 ├── evaluation/
-│   └── evaluation_set.md       # Evaluation questions + results
+│   └── evaluation_set.md       # 50 evaluation questions + results
 │
 ├── requirements.txt
 ├── README.md
 ├── design-and-evaluation.md
 ├── ai-tooling.md
 └── .gitignore
-⚙️ Setup Instructions
-1. Clone the repository
+
 Code
+
+---
+
+## 📚 Policy Dataset (16 Policies)
+
+The system includes a complete set of **16 company policies**, stored in both `.txt` and `.md` formats:
+
+- PTO Policy  
+- Remote Work Policy  
+- Holiday Policy  
+- Expense Policy  
+- Parental Leave Policy  
+- Code of Conduct  
+- Security Policy  
+- Travel Policy  
+- IT Usage Policy  
+- Anti‑Harassment Policy  
+- Attendance Policy  
+- Benefits Policy  
+- Reimbursement Policy  
+- Data Protection Policy  
+- HR General Policy  
+- Workplace Behavior Policy  
+
+### Automatic Policy Generation
+Missing policies can be generated automatically:
+
+python scripts/generate_policies.py
+
+Code
+
+This script creates both `.txt` (used by RAG) and `.md` (human‑readable) versions.
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
 git clone https://github.com/dixkox/policy-rag-app.git
 cd policy-rag-app
-2. Create a virtual environment
+
 Code
+
+### 2. Create a virtual environment
 python -m venv venv
 venv\Scripts\activate         # Windows
 source venv/bin/activate      # macOS/Linux
-3. Install dependencies
+
 Code
+
+### 3. Install dependencies
 pip install -r requirements.txt
-4. Add policy documents
-Place your .txt files inside:
 
 Code
+
+### 4. Ensure policy documents exist
+Place `.txt` files inside:
+
 data/policies/
-Each file should contain headings like:
 
 Code
-# PTO Policy
-# Code of Conduct
-# Security Policy
-🚀 Running the Application
-Start the FastAPI backend
-Run from the project root:
+
+Each file must contain a heading like:
+
+PTO Policy
+Code of Conduct
+Security Policy
+Code
+
+Or generate all missing policies automatically:
+
+python scripts/generate_policies.py
 
 Code
+
+---
+
+## 🚀 Running the Application
+
+### Start the FastAPI backend
 uvicorn app.main:app --reload
+
+Code
+
 Backend will be available at:
 
-Code
 http://127.0.0.1:8000
-🌐 Start the Frontend (port 5500)
-Option 1 — VS Code Live Server (recommended)
-Open the project in VS Code
-
-Navigate to frontend/index.html
-
-Right‑click the file
-
-Select “Open with Live Server”
-
-Your browser will automatically open:
 
 Code
+
+---
+
+## 🌐 Start the Frontend (port 5500)
+
+### Option 1 — VS Code Live Server (recommended)
+- Open the project in VS Code  
+- Navigate to `frontend/index.html`  
+- Right‑click → **Open with Live Server**  
+
+Your browser will open:
+
 http://localhost:5500/
-This is your active frontend URL.
-
-Option 2 — Python static server
-If you prefer running manually:
 
 Code
+
+### Option 2 — Python static server
 cd frontend
 python -m http.server 5500
-Then open:
 
 Code
-http://localhost:5500/
-🔌 API Usage
-POST /ask
-Request:
 
-json
+Open:
+
+http://localhost:5500/
+
+Code
+
+---
+
+## 🔌 API Usage
+
+### POST /ask
+Request:
+```json
 {
   "question": "What is the PTO policy?"
 }
@@ -128,20 +193,26 @@ Response:
 json
 { "status": "ok" }
 🧠 RAG Pipeline Summary
-Ingestion  
+Ingestion
 Loads .txt files → splits by headings → cleans text.
 
-Indexing  
+Indexing
 TF‑IDF vectorizer → sparse matrix stored in memory.
 
-Retrieval  
+Retrieval
 Query → TF‑IDF → cosine similarity → best chunk selected.
 
-Guardrails  
-If similarity < 0.25, the question is rejected.
+Guardrails
+If similarity < 0.25 → return “Invalid question”.
 
-Answer Generation  
-Returns context + similarity score + citation.
+Answer Generation
+Returns:
+
+Retrieved context
+
+Similarity score
+
+Citation (file + section)
 
 🧪 Evaluation
 Full evaluation is documented in:
@@ -154,11 +225,15 @@ Includes:
 
 Groundedness
 
+Relevance
+
+Correctness
+
 Citation accuracy
 
 Latency (p50/p95)
 
-30‑question evaluation set
+50‑question evaluation set across 16 policies
 
 🛠️ AI Tools Used
 Documented in:
@@ -195,17 +270,21 @@ All group members present
 
 [x] FastAPI backend
 
+[x] 16‑policy dataset
+
+[x] Automatic policy generation script
+
 [x] Citations added
 
 [x] Clean GitHub repo
 
-[x] README.md
+[x] README.md updated
 
-[x] design-and-evaluation.md
+[x] design-and-evaluation.md updated
 
-[x] ai-tooling.md
+[x] ai-tooling.md updated
 
-[x] Evaluation set
+[x] Evaluation set (50 questions)
 
 [x] CI/CD workflow
 
